@@ -18,16 +18,34 @@ const makeGaleryMarkup = galleryItems
 gallery.insertAdjacentHTML('beforeend', makeGaleryMarkup);
 // console.log(makeGaleryMarkup);
 
-gallery.addEventListener('click', (event) => {
+gallery.addEventListener('click', onGalleryConteinerClick)
+
+function onGalleryConteinerClick(event) {
     event.preventDefault();
+    if (!event.target.classList.contains('gallery__image')) {
+        return;
+    }
     const linkOnOrigImage = event.target.dataset.source;
     
     const instance = basicLightbox.create(`
     <img src="${linkOnOrigImage}" width="800" height="600">
-    `);
-    instance.show(() => console.log('lightbox now visible'));
-});
-
+    `, {
+    onShow: (instance) => {
+        window.addEventListener('keydown', onEscKeyPress)
+        },
+    onClose: (instance) => {
+        window.removeEventListener('keydown', onEscKeyPress)
+        }
+    });
+    
+    instance.show()
+      function onEscKeyPress(evt) {
+        const ESC_KEY_CODE = 'Escape'
+        if (evt.code === ESC_KEY_CODE) {
+          instance.close()
+        }
+      }
+    };
 //   1. Создание и рендер разметки по массиву данных galleryItems и предоставленному 
 // шаблону элемента галереи.
 //   2. Реализация делегирования на div.gallery и получение url большого изображения.
